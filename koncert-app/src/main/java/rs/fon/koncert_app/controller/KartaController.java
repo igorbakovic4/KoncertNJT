@@ -11,17 +11,16 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/karte")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class KartaController {
 
     private final KartaService kartaService;
 
     @GetMapping("/koncert/{koncertId}")
-    public List<Karta> dohvatiSveZaKoncert(@PathVariable Long koncertId) {
-        return kartaService.dohvatiSveZaKoncert(koncertId);
+    public ResponseEntity<List<Karta>> dohvatiSveZaKoncert(@PathVariable Long koncertId) {
+        return ResponseEntity.ok(kartaService.dohvatiSveZaKoncert(koncertId));
     }
 
-    @PostMapping("/{id}/kupi")
+    @PostMapping("/{idKoncert}/kupi")
     public ResponseEntity<Karta> kupiKartu(
             @PathVariable Long id,
             @RequestParam String imeKupca,

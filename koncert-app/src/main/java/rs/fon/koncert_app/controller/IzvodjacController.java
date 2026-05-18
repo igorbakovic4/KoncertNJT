@@ -1,5 +1,7 @@
 package rs.fon.koncert_app.controller;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,14 +15,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/izvodjaci")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "tip")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Muzicar.class, name = "MUZICAR"),
+        @JsonSubTypes.Type(value = Bend.class, name = "BEND")
+})
 public class IzvodjacController {
 
     private final IzvodjacService izvodjacService;
 
     @GetMapping
-    public List<Izvodjac> dohvatiSve() {
-        return izvodjacService.dohvatiSve();
+    public ResponseEntity<List<Izvodjac>> dohvatiSve() {
+        return ResponseEntity.ok(izvodjacService.dohvatiSve());
     }
 
     @GetMapping("/{id}")
@@ -43,4 +49,4 @@ public class IzvodjacController {
         izvodjacService.obrisiIzvodjaca(id);
         return ResponseEntity.noContent().build();
     }
-}
+} 

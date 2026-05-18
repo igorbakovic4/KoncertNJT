@@ -11,14 +11,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/zanrovi")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class ZanrController {
 
     private final ZanrService zanrService;
 
     @GetMapping
-    public List<Zanr> dohvatiSve() {
-        return zanrService.dohvatiSve();
+    public ResponseEntity<List<Zanr>> dohvatiSve() {
+        return ResponseEntity.ok(zanrService.dohvatiSve());
     }
 
     @GetMapping("/{id}")
