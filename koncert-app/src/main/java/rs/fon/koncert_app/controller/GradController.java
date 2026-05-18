@@ -16,6 +16,7 @@ public class GradController {
 
     private final GradService gradService;
 
+    @GetMapping
     public ResponseEntity<List<Grad>> findAll() {
         return ResponseEntity.ok(gradService.findAll());
     }
