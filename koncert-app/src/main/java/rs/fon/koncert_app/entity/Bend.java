@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 
-@Entity
+@Entitys
 @Table(name = "bend")
 @Data
 @NoArgsConstructor
