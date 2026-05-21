@@ -54,4 +54,11 @@ public class KoncertController {
         return ResponseEntity.noContent().build();
     }
 
+    @PutMapping("/{id}/izvodjaci")
+    public ResponseEntity<Koncert> updateIzvodjaci(
+            @PathVariable Long id,
+            @RequestBody List<Long> izvodjacIds) {
+        return ResponseEntity.ok(koncertService.updateIzvodjaci(id, izvodjacIds));
+    }
+
 }

@@ -2,7 +2,9 @@ package rs.fon.koncert_app.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import rs.fon.koncert_app.entity.Izvodjac;
 import rs.fon.koncert_app.entity.Koncert;
+import rs.fon.koncert_app.repository.IzvodjacRepository;
 import rs.fon.koncert_app.repository.KoncertRepository;
 
 import java.time.LocalDate;
@@ -13,6 +15,7 @@ import java.util.List;
 public class KoncertService {
 
     private final KoncertRepository koncertRepository;
+    private final IzvodjacRepository izvodjacRepository;
     private final LokacijaService lokacijaService;
 
     public List<Koncert> findAll() {
@@ -54,6 +57,13 @@ public class KoncertService {
         postojeci.setLokacija(koncert.getLokacija());
         postojeci.setIzvodjaci(koncert.getIzvodjaci());
         return koncertRepository.save(postojeci);
+    }
+
+    public Koncert updateIzvodjaci(Long id, List<Long> izvodjacIds) {
+        Koncert koncert = findById(id);
+        List<Izvodjac> izvodjaci = izvodjacRepository.findAllById(izvodjacIds);
+        koncert.setIzvodjaci(izvodjaci);
+        return koncertRepository.save(koncert);
     }
 
     public void delete(Long id) {

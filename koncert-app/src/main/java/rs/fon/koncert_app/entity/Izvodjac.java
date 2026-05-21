@@ -1,13 +1,18 @@
 package rs.fon.koncert_app.entity;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import lombok.AllArgsConstructor;
 import java.util.List;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "tip")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Muzicar.class, name = "MUZICAR"),
+        @JsonSubTypes.Type(value = Bend.class, name = "BEND")
+})
 @Entity
 @Table(name = "izvodjac")
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -30,5 +35,4 @@ public abstract class Izvodjac {
             inverseJoinColumns = @JoinColumn(name = "zanr_id")
     )
     private List<Zanr> zanrovi;
-
 }
