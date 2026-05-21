@@ -12,7 +12,10 @@ spring.jpa.properties.hibernate.format_sql=true
 spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
 
 # === SERVER ===
-server.port=8080
+server.port=9000
 
 # === CORS (da Angular može da zove backend) ===
 spring.web.cors.allowed-origins=http://localhost:4200
+
+spring.sql.init.mode=always
+spring.sql.init.data-locations=classpath:data.sql
