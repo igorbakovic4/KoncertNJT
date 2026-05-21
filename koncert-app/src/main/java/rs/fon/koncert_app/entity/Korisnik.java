@@ -26,5 +26,14 @@ public class Korisnik {
     private String email;
 
     @Column(nullable = false)
-    private String password;
+    private String lozinka;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Uloga uloga;
+
+    public enum Uloga {
+        ADMIN,
+        KORISNIK
+    }
 }
