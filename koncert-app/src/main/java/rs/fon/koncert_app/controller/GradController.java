@@ -3,6 +3,7 @@ package rs.fon.koncert_app.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import rs.fon.koncert_app.entity.Grad;
 import rs.fon.koncert_app.service.GradService;
@@ -27,16 +28,19 @@ public class GradController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Grad> save(@RequestBody Grad grad) {
         return ResponseEntity.status(HttpStatus.CREATED).body(gradService.save(grad));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Grad> update(@PathVariable Long id, @RequestBody Grad grad) {
         return ResponseEntity.ok(gradService.update(id, grad));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         gradService.delete(id);
         return ResponseEntity.noContent().build();

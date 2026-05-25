@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import rs.fon.koncert_app.entity.Karta;
 import rs.fon.koncert_app.entity.Koncert;
@@ -42,22 +43,26 @@ public class KoncertController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Koncert> save(@RequestBody Koncert koncert) {
         return ResponseEntity.status(HttpStatus.CREATED).body(koncertService.save(koncert));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Koncert> update(@PathVariable Long id, @RequestBody Koncert koncert) {
         return ResponseEntity.ok(koncertService.update(id, koncert));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         koncertService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}/izvodjaci")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Koncert> updateIzvodjaci(
             @PathVariable Long id,
             @RequestBody List<Long> izvodjacIds) {
@@ -65,6 +70,7 @@ public class KoncertController {
     }
 
     @PostMapping("/{id}/generisi-karte")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> generisiKarte(@PathVariable Long id, @RequestParam BigDecimal cena) {
         try {
             List<Karta> karte = koncertService.generisiKarte(id, cena);

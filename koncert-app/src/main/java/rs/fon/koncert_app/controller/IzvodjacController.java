@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import rs.fon.koncert_app.entity.Bend;
 import rs.fon.koncert_app.entity.Izvodjac;
@@ -35,16 +36,19 @@ public class IzvodjacController {
     }
 
     @PostMapping("/muzicar")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Muzicar> sacuvajMuzicara(@RequestBody Muzicar muzicar) {
         return ResponseEntity.ok(izvodjacService.sacuvajMuzicara(muzicar));
     }
 
     @PostMapping("/bend")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Bend> sacuvajBend(@RequestBody Bend bend) {
         return ResponseEntity.ok(izvodjacService.sacuvajBend(bend));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> obrisiIzvodjaca(@PathVariable Long id) {
         izvodjacService.obrisiIzvodjaca(id);
         return ResponseEntity.noContent().build();

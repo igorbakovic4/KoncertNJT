@@ -11,4 +11,5 @@ public class AuthResponse {
     private String ime;
     private String prezime;
     private String email;
+    private String uloga;
 }

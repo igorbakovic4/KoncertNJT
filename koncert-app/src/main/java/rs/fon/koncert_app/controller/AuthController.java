@@ -47,7 +47,8 @@ public class AuthController {
                 korisnik.getId(),
                 korisnik.getIme(),
                 korisnik.getPrezime(),
-                korisnik.getEmail()
+                korisnik.getEmail(),
+                korisnik.getUloga().name()
         ));
     }
 
@@ -68,7 +69,8 @@ public class AuthController {
                     korisnik.getId(),
                     korisnik.getIme(),
                     korisnik.getPrezime(),
-                    korisnik.getEmail()
+                    korisnik.getEmail(),
+                    korisnik.getUloga().name()
             ));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
