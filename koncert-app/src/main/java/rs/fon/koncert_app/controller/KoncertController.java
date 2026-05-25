@@ -5,11 +5,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import rs.fon.koncert_app.entity.Karta;
 import rs.fon.koncert_app.entity.Koncert;
 import rs.fon.koncert_app.service.KoncertService;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/koncerti")
@@ -59,6 +62,19 @@ public class KoncertController {
             @PathVariable Long id,
             @RequestBody List<Long> izvodjacIds) {
         return ResponseEntity.ok(koncertService.updateIzvodjaci(id, izvodjacIds));
+    }
+
+    @PostMapping("/{id}/generisi-karte")
+    public ResponseEntity<?> generisiKarte(@PathVariable Long id, @RequestParam BigDecimal cena) {
+        try {
+            List<Karta> karte = koncertService.generisiKarte(id, cena);
+            return ResponseEntity.ok(Map.of(
+                    "poruka", "Uspešno generisano " + karte.size() + " karata.",
+                    "broj", karte.size()
+            ));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 }
