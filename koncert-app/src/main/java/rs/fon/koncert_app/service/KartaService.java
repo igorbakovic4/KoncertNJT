@@ -6,8 +6,11 @@ import rs.fon.koncert_app.entity.Karta;
 import rs.fon.koncert_app.entity.Karta.StatusKarte;
 import rs.fon.koncert_app.repository.KartaRepository;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,13 +25,9 @@ public class KartaService {
                 .collect(Collectors.toList());
     }
 
-    public Karta kupiKartu(Long kartaId, String imeKupca, String emailKupca) {
-        Karta karta = kartaRepository.findById(kartaId)
-                .orElseThrow(() -> new RuntimeException("Karta sa id-om " + kartaId + " nije pronađena."));
-
-        if (karta.getStatus() != StatusKarte.DOSTUPNA) {
-            throw new RuntimeException("Karta nije dostupna za kupovinu. Trenutni status: " + karta.getStatus());
-        }
+    public Karta kupiKartu(Long koncertId, String imeKupca, String emailKupca) {
+        Karta karta = kartaRepository.findFirstByKoncertIdAndStatus(koncertId, StatusKarte.DOSTUPNA)
+                                        .orElseThrow(() -> new RuntimeException("Nema dostupnih karata."));
 
         karta.setStatus(StatusKarte.PRODATA);
         karta.setDatumProdaje(LocalDateTime.now());
@@ -46,4 +45,19 @@ public class KartaService {
 
         return kartaRepository.save(karta);
     }
+
+    public Map<String, Object> getSummary(Long koncertId) {
+        long dostupne = kartaRepository.countByKoncertIdAndStatus(koncertId, StatusKarte.DOSTUPNA);
+        long ukupno = kartaRepository.findByKoncertId(koncertId).size();
+
+        BigDecimal cena = kartaRepository.findFirstByKoncertIdAndStatus(koncertId, StatusKarte.DOSTUPNA)
+                .map(Karta::getCena).orElse(BigDecimal.ZERO);
+
+        Map<String, Object> summary = new HashMap<>();
+        summary.put("dostupne", dostupne);
+        summary.put("ukupno", ukupno);
+        summary.put("cena", cena);
+        return summary;
+    }
+
 }

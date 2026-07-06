@@ -8,6 +8,7 @@ import rs.fon.koncert_app.entity.Karta;
 import rs.fon.koncert_app.service.KartaService;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/karte")
@@ -21,13 +22,18 @@ public class KartaController {
         return ResponseEntity.ok(kartaService.dohvatiSveZaKoncert(koncertId));
     }
 
-    @PostMapping("/{idKoncert}/kupi")
-    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/koncert/{koncertId}/summary")
+    public ResponseEntity<Map<String, Object>> getSummary(@PathVariable Long koncertId) {
+        return ResponseEntity.ok(kartaService.getSummary(koncertId));
+    }
+
+    @PostMapping("/koncert/{koncertId}/kupi")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Karta> kupiKartu(
-            @PathVariable Long id,
+            @PathVariable Long koncertId,
             @RequestParam String imeKupca,
             @RequestParam String emailKupca) {
-        return ResponseEntity.ok(kartaService.kupiKartu(id, imeKupca, emailKupca));
+        return ResponseEntity.ok(kartaService.kupiKartu(koncertId, imeKupca, emailKupca));
     }
 
     @PostMapping("/{id}/storniraj")
