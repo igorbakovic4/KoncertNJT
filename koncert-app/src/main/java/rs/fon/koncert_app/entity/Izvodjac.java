@@ -3,16 +3,17 @@ package rs.fon.koncert_app.entity;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+
 import java.util.List;
 
 /**
  * Apstraktna klasa Izvodjac predstavlja osobu ili grupu koja nastupa na koncertu.
- *
- * Izvodjac moze biti Muzicar ili Bend. Koristi se JOINED strategija nasledjivanja,
- * sto znaci da svaki podtip ima svoju tabelu u bazi podataka sa zajednickim ID-em.
+ * Izvodjac moze biti Muzicar ili Bend. Koristi se JOINED strategija nasledjivanja.
  *
  * @author igor
  * @see Muzicar
@@ -40,7 +41,11 @@ public abstract class Izvodjac {
 
     /**
      * Kontakt email izvodjaca.
+     * Nedozvoljene vrednosti: string koji nije u ispravnom formatu email adrese,
+     * string duzi od 100 karaktera.
      */
+    @Email(message = "Kontakt email mora biti u ispravnom formatu.")
+    @Size(max = 100, message = "Kontakt email ne sme biti duzi od 100 karaktera.")
     @Column(name = "kontakt_email")
     private String kontaktEmail;
 
@@ -55,4 +60,5 @@ public abstract class Izvodjac {
             inverseJoinColumns = @JoinColumn(name = "zanr_id")
     )
     private List<Zanr> zanrovi;
+
 }

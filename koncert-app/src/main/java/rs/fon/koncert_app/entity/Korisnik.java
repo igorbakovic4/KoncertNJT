@@ -1,15 +1,17 @@
 package rs.fon.koncert_app.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 /**
  * Klasa Korisnik predstavlja registrovanog korisnika aplikacije.
- *
- * Korisnik moze imati ulogu ADMIN ili KORISNIK. Admin ima pristup svim
- * operacijama, dok obican korisnik moze samo da pregleda sadrzaj i kupuje karte.
+ * Korisnik moze imati ulogu ADMIN ili KORISNIK.
  * Lozinka se cuva kao BCrypt hash, nikad kao plain text.
  *
  * @author igor
@@ -29,32 +31,50 @@ public class Korisnik {
     private Long id;
 
     /**
-     * Ime korisnika. Ne sme biti null.
+     * Ime korisnika.
+     * Nedozvoljene vrednosti: null, prazan string, string sa samo razmacima,
+     * string duzi od 50 karaktera.
      */
+    @NotBlank(message = "Ime korisnika ne sme biti prazno.")
+    @Size(max = 50, message = "Ime ne sme biti duze od 50 karaktera.")
     @Column(nullable = false)
     private String ime;
 
     /**
-     * Prezime korisnika. Ne sme biti null.
+     * Prezime korisnika.
+     * Nedozvoljene vrednosti: null, prazan string, string sa samo razmacima,
+     * string duzi od 50 karaktera.
      */
+    @NotBlank(message = "Prezime korisnika ne sme biti prazno.")
+    @Size(max = 50, message = "Prezime ne sme biti duze od 50 karaktera.")
     @Column(nullable = false)
     private String prezime;
 
     /**
-     * Email adresa korisnika. Mora biti jedinstvena u bazi podataka. Ne sme biti null.
+     * Email adresa korisnika. Mora biti jedinstvena u bazi podataka.
+     * Nedozvoljene vrednosti: null, prazan string, string koji nije u ispravnom
+     * formatu email adrese, string duzi od 100 karaktera.
      */
+    @NotBlank(message = "Email ne sme biti prazan.")
+    @Email(message = "Email mora biti u ispravnom formatu.")
+    @Size(max = 100, message = "Email ne sme biti duzi od 100 karaktera.")
     @Column(unique = true, nullable = false)
     private String email;
 
     /**
-     * Lozinka korisnika sacuvana kao BCrypt hash. Ne sme biti null.
+     * Lozinka korisnika sacuvana kao BCrypt hash.
+     * Nedozvoljene vrednosti: null, prazan string.
      */
+    @NotBlank(message = "Lozinka ne sme biti prazna.")
     @Column(nullable = false)
     private String lozinka;
 
     /**
-     * Uloga korisnika u sistemu. Moze biti ADMIN ili KORISNIK. Ne sme biti null.
+     * Uloga korisnika u sistemu.
+     * Nedozvoljene vrednosti: null.
+     * Dozvoljene vrednosti: ADMIN, KORISNIK.
      */
+    @NotNull(message = "Uloga korisnika ne sme biti null.")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Uloga uloga;
@@ -68,4 +88,5 @@ public class Korisnik {
         /** Obican korisnik koji moze da pregleda sadrzaj i kupuje karte. */
         KORISNIK
     }
+
 }

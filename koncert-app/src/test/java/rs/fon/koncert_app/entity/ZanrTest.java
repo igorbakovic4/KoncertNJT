@@ -1,10 +1,16 @@
 package rs.fon.koncert_app.entity;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,10 +20,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class ZanrTest {
 
     Zanr z;
+    Validator validator;
 
     @BeforeEach
     void setUp() {
         z = new Zanr();
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
     }
 
     @AfterEach
@@ -73,5 +82,29 @@ class ZanrTest {
         z2.setNaziv(naziv2);
 
         assertEquals(jednako, z.equals(z2));
+    }
+
+    @Test
+    void testNazivNullValidacija() {
+        z.setNaziv(null);
+        assertFalse(validator.validate(z).isEmpty());
+    }
+
+    @Test
+    void testNazivPrazanValidacija() {
+        z.setNaziv("");
+        assertFalse(validator.validate(z).isEmpty());
+    }
+
+    @Test
+    void testNazivPredugiValidacija() {
+        z.setNaziv("a".repeat(51));
+        assertFalse(validator.validate(z).isEmpty());
+    }
+
+    @Test
+    void testZanrIspravanValidacija() {
+        z.setNaziv("Rock");
+        assertTrue(validator.validate(z).isEmpty());
     }
 }

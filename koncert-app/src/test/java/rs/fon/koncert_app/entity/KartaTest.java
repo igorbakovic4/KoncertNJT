@@ -1,5 +1,9 @@
 package rs.fon.koncert_app.entity;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,6 +23,7 @@ class KartaTest {
 
     Karta karta;
     Koncert koncert;
+    Validator validator;
 
     @BeforeEach
     void setUp() {
@@ -43,6 +49,9 @@ class KartaTest {
         karta.setCena(new BigDecimal("2000.00"));
         karta.setStatus(Karta.StatusKarte.DOSTUPNA);
         karta.setKoncert(koncert);
+
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
     }
 
     @AfterEach
@@ -155,5 +164,70 @@ class KartaTest {
         Karta k2 = new Karta();
         k2.setId(2L);
         assertNotEquals(karta, k2);
+    }
+
+    @Test
+    void testKoncertNullValidacija() {
+        karta.setKoncert(null);
+        assertFalse(validator.validate(karta).isEmpty());
+    }
+
+    @Test
+    void testRedNullValidacija() {
+        karta.setRed(null);
+        assertFalse(validator.validate(karta).isEmpty());
+    }
+
+    @Test
+    void testRedNulaValidacija() {
+        karta.setRed(0);
+        assertFalse(validator.validate(karta).isEmpty());
+    }
+
+    @Test
+    void testSedisteNullValidacija() {
+        karta.setSediste(null);
+        assertFalse(validator.validate(karta).isEmpty());
+    }
+
+    @Test
+    void testSedisteNulaValidacija() {
+        karta.setSediste(0);
+        assertFalse(validator.validate(karta).isEmpty());
+    }
+
+    @Test
+    void testCenaNullValidacija() {
+        karta.setCena(null);
+        assertFalse(validator.validate(karta).isEmpty());
+    }
+
+    @Test
+    void testCenaNulaValidacija() {
+        karta.setCena(BigDecimal.ZERO);
+        assertFalse(validator.validate(karta).isEmpty());
+    }
+
+    @Test
+    void testCenaNegativnaValidacija() {
+        karta.setCena(new BigDecimal("-1.00"));
+        assertFalse(validator.validate(karta).isEmpty());
+    }
+
+    @Test
+    void testStatusNullValidacija() {
+        karta.setStatus(null);
+        assertFalse(validator.validate(karta).isEmpty());
+    }
+
+    @Test
+    void testEmailKupcaNeispravnValidacija() {
+        karta.setEmailKupca("nije-email");
+        assertFalse(validator.validate(karta).isEmpty());
+    }
+
+    @Test
+    void testKartaIspravnaValidacija() {
+        assertTrue(validator.validate(karta).isEmpty());
     }
 }

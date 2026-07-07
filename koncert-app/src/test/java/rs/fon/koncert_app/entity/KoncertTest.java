@@ -1,5 +1,9 @@
 package rs.fon.koncert_app.entity;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,6 +22,7 @@ class KoncertTest {
 
     Koncert k;
     Lokacija lokacija;
+    Validator validator;
 
     @BeforeEach
     void setUp() {
@@ -39,6 +45,9 @@ class KoncertTest {
         k.setStatus(Koncert.StatusKoncerta.PLANIRAN);
         k.setLokacija(lokacija);
         k.setIzvodjaci(new ArrayList<>());
+
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
     }
 
     @AfterEach
@@ -140,5 +149,58 @@ class KoncertTest {
         Koncert k2 = new Koncert();
         k2.setId(2L);
         assertNotEquals(k, k2);
+    }
+
+    @Test
+    void testNazivNullValidacija() {
+        k.setNaziv(null);
+        assertFalse(validator.validate(k).isEmpty());
+    }
+
+    @Test
+    void testNazivPrazanValidacija() {
+        k.setNaziv("");
+        assertFalse(validator.validate(k).isEmpty());
+    }
+
+    @Test
+    void testNazivPredugiValidacija() {
+        k.setNaziv("a".repeat(151));
+        assertFalse(validator.validate(k).isEmpty());
+    }
+
+    @Test
+    void testDatumNullValidacija() {
+        k.setDatum(null);
+        assertFalse(validator.validate(k).isEmpty());
+    }
+
+    @Test
+    void testVremePocetkaNullValidacija() {
+        k.setVremePocetka(null);
+        assertFalse(validator.validate(k).isEmpty());
+    }
+
+    @Test
+    void testVremeTrajanjaNeispravnoValidacija() {
+        k.setVremeTrajanja(0);
+        assertFalse(validator.validate(k).isEmpty());
+    }
+
+    @Test
+    void testStatusNullValidacija() {
+        k.setStatus(null);
+        assertFalse(validator.validate(k).isEmpty());
+    }
+
+    @Test
+    void testLokacijaNullValidacija() {
+        k.setLokacija(null);
+        assertFalse(validator.validate(k).isEmpty());
+    }
+
+    @Test
+    void testKoncertIspravanValidacija() {
+        assertTrue(validator.validate(k).isEmpty());
     }
 }

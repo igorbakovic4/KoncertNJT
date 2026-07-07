@@ -1,10 +1,16 @@
 package rs.fon.koncert_app.entity;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,6 +21,7 @@ class LokacijaTest {
 
     Lokacija l;
     Grad grad;
+    Validator validator;
 
     @BeforeEach
     void setUp() {
@@ -23,6 +30,9 @@ class LokacijaTest {
         grad.setNaziv("Beograd");
 
         l = new Lokacija();
+
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
     }
 
     @AfterEach
@@ -104,5 +114,68 @@ class LokacijaTest {
         l2.setNaziv(naziv2);
 
         assertEquals(jednako, l.equals(l2));
+    }
+
+    @Test
+    void testNazivNullValidacija() {
+        l.setNaziv(null);
+        assertFalse(validator.validate(l).isEmpty());
+    }
+
+    @Test
+    void testNazivPrazanValidacija() {
+        l.setNaziv("");
+        assertFalse(validator.validate(l).isEmpty());
+    }
+
+    @Test
+    void testNazivPredugiValidacija() {
+        l.setNaziv("a".repeat(151));
+        assertFalse(validator.validate(l).isEmpty());
+    }
+
+    @Test
+    void testAdresaNullValidacija() {
+        l.setAdresa(null);
+        assertFalse(validator.validate(l).isEmpty());
+    }
+
+    @Test
+    void testAdresaPraznaValidacija() {
+        l.setAdresa("");
+        assertFalse(validator.validate(l).isEmpty());
+    }
+
+    @Test
+    void testKapacitetNullValidacija() {
+        l.setKapacitet(null);
+        assertFalse(validator.validate(l).isEmpty());
+    }
+
+    @Test
+    void testKapacitetNulaValidacija() {
+        l.setKapacitet(0);
+        assertFalse(validator.validate(l).isEmpty());
+    }
+
+    @Test
+    void testKapacitetNegativnaValidacija() {
+        l.setKapacitet(-1);
+        assertFalse(validator.validate(l).isEmpty());
+    }
+
+    @Test
+    void testGradNullValidacija() {
+        l.setGrad(null);
+        assertFalse(validator.validate(l).isEmpty());
+    }
+
+    @Test
+    void testLokacijaIspravnaValidacija() {
+        l.setNaziv("Stark Arena");
+        l.setAdresa("Bulevar 58");
+        l.setKapacitet(20000);
+        l.setGrad(grad);
+        assertTrue(validator.validate(l).isEmpty());
     }
 }

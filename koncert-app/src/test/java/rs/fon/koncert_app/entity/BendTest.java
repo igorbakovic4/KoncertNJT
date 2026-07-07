@@ -1,10 +1,16 @@
 package rs.fon.koncert_app.entity;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,10 +20,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class BendTest {
 
     Bend b;
+    Validator validator;
 
     @BeforeEach
     void setUp() {
         b = new Bend();
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
     }
 
     @AfterEach
@@ -79,5 +88,56 @@ class BendTest {
         b2.setNaziv(naziv2);
 
         assertEquals(jednako, b.equals(b2));
+    }
+
+    @Test
+    void testNazivNullValidacija() {
+        b.setNaziv(null);
+        assertFalse(validator.validate(b).isEmpty());
+    }
+
+    @Test
+    void testNazivPrazanValidacija() {
+        b.setNaziv("");
+        assertFalse(validator.validate(b).isEmpty());
+    }
+
+    @Test
+    void testNazivPredugiValidacija() {
+        b.setNaziv("a".repeat(101));
+        assertFalse(validator.validate(b).isEmpty());
+    }
+
+    @Test
+    void testBrojClanovaNullValidacija() {
+        b.setBrojClanova(null);
+        assertFalse(validator.validate(b).isEmpty());
+    }
+
+    @Test
+    void testBrojClanovaNulaValidacija() {
+        b.setBrojClanova(0);
+        assertFalse(validator.validate(b).isEmpty());
+    }
+
+    @Test
+    void testBrojClanovaNegativnaValidacija() {
+        b.setBrojClanova(-1);
+        assertFalse(validator.validate(b).isEmpty());
+    }
+
+    @Test
+    void testBendIspravanValidacija() {
+        b.setNaziv("Bijelo Dugme");
+        b.setBrojClanova(5);
+        assertTrue(validator.validate(b).isEmpty());
+    }
+
+    @Test
+    void testEmailNeispravnValidacija() {
+        b.setNaziv("Bijelo Dugme");
+        b.setBrojClanova(5);
+        b.setKontaktEmail("nije-email");
+        assertFalse(validator.validate(b).isEmpty());
     }
 }

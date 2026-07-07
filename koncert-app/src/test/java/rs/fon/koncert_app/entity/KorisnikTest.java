@@ -1,10 +1,16 @@
 package rs.fon.koncert_app.entity;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class KorisnikTest {
 
     Korisnik korisnik;
+    Validator validator;
 
     @BeforeEach
     void setUp() {
@@ -24,6 +31,9 @@ class KorisnikTest {
         korisnik.setEmail("marko@email.com");
         korisnik.setLozinka("hashed_lozinka");
         korisnik.setUloga(Korisnik.Uloga.KORISNIK);
+
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
     }
 
     @AfterEach
@@ -106,5 +116,58 @@ class KorisnikTest {
         k2.setUloga(Korisnik.Uloga.KORISNIK);
 
         assertEquals(jednako, korisnik.equals(k2));
+    }
+
+    @Test
+    void testImeNullValidacija() {
+        korisnik.setIme(null);
+        assertFalse(validator.validate(korisnik).isEmpty());
+    }
+
+    @Test
+    void testImePraznoValidacija() {
+        korisnik.setIme("");
+        assertFalse(validator.validate(korisnik).isEmpty());
+    }
+
+    @Test
+    void testPrezimeNullValidacija() {
+        korisnik.setPrezime(null);
+        assertFalse(validator.validate(korisnik).isEmpty());
+    }
+
+    @Test
+    void testEmailNullValidacija() {
+        korisnik.setEmail(null);
+        assertFalse(validator.validate(korisnik).isEmpty());
+    }
+
+    @Test
+    void testEmailNeispravnValidacija() {
+        korisnik.setEmail("nije-email");
+        assertFalse(validator.validate(korisnik).isEmpty());
+    }
+
+    @Test
+    void testEmailPredugiValidacija() {
+        korisnik.setEmail("a".repeat(95) + "@b.com");
+        assertFalse(validator.validate(korisnik).isEmpty());
+    }
+
+    @Test
+    void testLozinkaPraznaValidacija() {
+        korisnik.setLozinka("");
+        assertFalse(validator.validate(korisnik).isEmpty());
+    }
+
+    @Test
+    void testUlogaNullValidacija() {
+        korisnik.setUloga(null);
+        assertFalse(validator.validate(korisnik).isEmpty());
+    }
+
+    @Test
+    void testKorisnikIspravanValidacija() {
+        assertTrue(validator.validate(korisnik).isEmpty());
     }
 }

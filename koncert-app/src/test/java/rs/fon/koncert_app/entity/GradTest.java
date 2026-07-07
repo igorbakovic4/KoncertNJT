@@ -1,10 +1,16 @@
 package rs.fon.koncert_app.entity;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,10 +20,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class GradTest {
 
     Grad g;
+    Validator validator;
 
     @BeforeEach
     void setUp() {
         g = new Grad();
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
     }
 
     @AfterEach
@@ -79,5 +88,52 @@ class GradTest {
         g2.setNaziv(naziv2);
 
         assertEquals(jednako, g.equals(g2));
+    }
+
+    @Test
+    void testHashCodeIstiZaIsteObjekte() {
+        g.setId(1L);
+        g.setNaziv("Beograd");
+
+        Grad g2 = new Grad();
+        g2.setId(1L);
+        g2.setNaziv("Beograd");
+
+        assertEquals(g.hashCode(), g2.hashCode());
+    }
+
+    @Test
+    void testNazivNullValidacija() {
+        g.setNaziv(null);
+        Set<ConstraintViolation<Grad>> violations = validator.validate(g);
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    void testNazivPrazanValidacija() {
+        g.setNaziv("");
+        Set<ConstraintViolation<Grad>> violations = validator.validate(g);
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    void testNazivSamoRazmaciValidacija() {
+        g.setNaziv("   ");
+        Set<ConstraintViolation<Grad>> violations = validator.validate(g);
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    void testNazivPredugiValidacija() {
+        g.setNaziv("a".repeat(101));
+        Set<ConstraintViolation<Grad>> violations = validator.validate(g);
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    void testNazivIspravanValidacija() {
+        g.setNaziv("Beograd");
+        Set<ConstraintViolation<Grad>> violations = validator.validate(g);
+        assertTrue(violations.isEmpty());
     }
 }
